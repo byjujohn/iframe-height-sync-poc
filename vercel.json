@@ -16,7 +16,15 @@
     ],
     "routes": [
         {
-            "src": "/(.*)",
+            "src": "/iframe-content/(.*)",
+            "dest": "/iframe-content/$1"
+        },
+        {
+            "src": "/vendor-component/dist/(.*)",
+            "dest": "/vendor-component/dist/$1"
+        },
+        {
+            "src": "/",
             "dest": "/index.html"
         }
     ]
