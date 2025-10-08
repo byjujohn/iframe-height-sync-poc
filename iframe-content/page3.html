@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 3 - Tall Content</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+
+        .height-badge {
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -23px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 17px;
+            width: 2px;
+            height: calc(100% - 12px);
+            background: #ddd;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.current {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .status {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📜 Page 3</h1>
+            <span class="height-badge">Target Height: ~1500px</span>
+        </div>
+
+        <div class="status">
+            <strong>✅ Height Sync Active</strong> - Handling tall content dynamically
+        </div>
+
+        <div class="content-box">
+            <h2>Tall Content Demonstration</h2>
+            <p>This page showcases how the height synchronization system handles significantly taller content (~1500px).
+                Watch how the parent container smoothly expands to accommodate all the content below.</p>
+        </div>
+
+        <div class="content-box">
+            <h3>Implementation Timeline</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Step 1: Iframe Content Detection</h4>
+                    <p>Each iframe page includes a height detection script that monitors the document body using
+                        ResizeObserver.</p>
+                    <div class="code-block">
+                        const resizeObserver = new ResizeObserver(() => {
+                        const height = document.body.scrollHeight;
+                        window.parent.postMessage({
+                        type: 'IFRAME_HEIGHT_UPDATE',
+                        height: height
+                        }, '*');
+                        });
+                        resizeObserver.observe(document.body);</div>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Step 2: PostMessage Communication</h4>
+                    <p>The iframe sends height updates to the parent using the postMessage API, which enables secure
+                        cross-frame communication.</p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Step 3: React Component Reception</h4>
+                    <p>The VendorPortal React component listens for these messages and updates its internal state.</p>
+                    <div class="code-block">
+                        useEffect(() => {
+                        const handleMessage = (event) => {
+                        if (event.data?.type === 'IFRAME_HEIGHT_UPDATE') {
+                        setCurrentHeight(event.data.height);
+                        if (onSizeChange) {
+                        onSizeChange(event.data.height);
+                        }
+                        }
+                        };
+                        window.addEventListener('message', handleMessage);
+                        return () => window.removeEventListener('message', handleMessage);
+                        }, [onSizeChange]);</div>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Step 4: Web Component Bridge</h4>
+                    <p>The React component is converted to a web component using react-to-webcomponent, making it usable
+                        in vanilla JavaScript applications.</p>
+                    <div class="code-block">
+                        import r2wc from 'react-to-webcomponent';
+
+                        const VendorPortalWebComponent = r2wc(VendorPortal, React, ReactDOM, {
+                        props: {
+                        iframeUrl: 'string',
+                        onSizeChange: 'function'
+                        }
+                        });
+
+                        customElements.define('vendor-portal', VendorPortalWebComponent);</div>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Step 5: Parent Application Integration</h4>
+                    <p>The parent application receives height updates through the onSizeChange callback and adjusts the
+                        wrapper div accordingly.</p>
+                    <div class="code-block">
+                        vendorPortal.onSizeChange = (height) => {
+                        wrapper.style.height = `${height + 40}px`;
+                        console.log('Height updated to:', height);
+                        };</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-box">
+            <h3>Benefits of This Approach</h3>
+            <ul>
+                <li><strong>No Scrollbars:</strong> The iframe height perfectly matches its content, eliminating nested
+                    scrollbars</li>
+                <li><strong>Smooth Transitions:</strong> CSS transitions provide smooth visual feedback during height
+                    changes</li>
+                <li><strong>Real-time Updates:</strong> ResizeObserver ensures immediate detection of any content
+                    changes</li>
+                <li><strong>Modular Architecture:</strong> The web component approach allows easy integration into any
+                    application</li>
+                <li><strong>Cross-framework Compatible:</strong> React internals are hidden behind a standard web
+                    component interface</li>
+            </ul>
+        </div>
+
+        <div class="content-box">
+            <h3>Production Considerations</h3>
+            <ul>
+                <li><strong>Origin Validation:</strong> Always validate event.origin in the message handler for security
+                </li>
+                <li><strong>Message Type Checking:</strong> Verify the message type to avoid processing unrelated
+                    messages</li>
+                <li><strong>Performance:</strong> Consider debouncing height updates if content changes frequently</li>
+                <li><strong>Error Handling:</strong> Implement robust error handling for failed message delivery</li>
+                <li><strong>Fallback Heights:</strong> Provide sensible default heights in case communication fails</li>
+            </ul>
+        </div>
+
+        <div class="content-box">
+            <h3>Test the Synchronization</h3>
+            <p>Navigate between pages using the links below and observe:</p>
+            <ul>
+                <li>The parent container height adjusting smoothly</li>
+                <li>Debug information updating in real-time</li>
+                <li>No scrollbars appearing on the iframe</li>
+                <li>Console logs showing the communication flow</li>
+            </ul>
+        </div>
+
+        <div class="nav-links">
+            <a href="page1.html">Page 1 (Short)</a>
+            <a href="page2.html">Page 2 (Medium)</a>
+            <a href="page3.html" class="current">Page 3 (Tall)</a>
+        </div>
+    </div>
+
+    <script>
+        // Height detection and communication script
+        function sendHeight() {
+            const height = document.body.scrollHeight;
+            console.log('📤 Page 3 sending height:', height);
+
+            // Send height to parent window
+            window.parent.postMessage({
+                type: 'IFRAME_HEIGHT_UPDATE',
+                height: height
+            }, '*'); // In production, specify the target origin
+        }
+
+        // Send height on load
+        window.addEventListener('load', () => {
+            console.log('🌐 Page 3 loaded');
+            sendHeight();
+        });
+
+        // Use ResizeObserver to detect any height changes
+        const resizeObserver = new ResizeObserver(() => {
+            sendHeight();
+        });
+
+        // Observe the body element
+        resizeObserver.observe(document.body);
+
+        // Fallback: Also send height after a short delay
+        setTimeout(sendHeight, 100);
+    </script>
+</body>
+
+</html>

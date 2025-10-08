@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 1 - Short Content</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ea66c0 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+
+        .height-badge {
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .content-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.current {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .status {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Page 1</h1>
+            <span class="height-badge">Target Height: ~300px</span>
+        </div>
+
+        <div class="status">
+            <strong>✅ Height Sync Active</strong> - This page will automatically report its height to the parent
+            application
+        </div>
+
+        <div class="content-box">
+            <h2>Welcome to the Short Page</h2>
+            <p>This is a demonstration of iframe height synchronization. This page has minimal content, resulting in a
+                short height of approximately 300px.</p>
+            <p><strong>Try navigating:</strong> Click the links below to load pages with different heights. Notice how
+                the parent container smoothly adjusts to match each page's content height.</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="page1.html" class="current">Page 1 (Short)</a>
+            <a href="page2.html">Page 2 (Medium)</a>
+            <a href="page3.html">Page 3 (Tall)</a>
+        </div>
+    </div>
+
+    <script>
+        // Height detection and communication script
+        function sendHeight() {
+            const height = document.body.scrollHeight;
+            console.log('📤 Page 1 sending height:', height);
+
+            // Send height to parent window
+            window.parent.postMessage({
+                type: 'IFRAME_HEIGHT_UPDATE',
+                height: height
+            }, '*'); // In production, specify the target origin
+        }
+
+        // Send height on load
+        window.addEventListener('load', () => {
+            console.log('🌐 Page 1 loaded');
+            sendHeight();
+        });
+
+        // Use ResizeObserver to detect any height changes
+        const resizeObserver = new ResizeObserver(() => {
+            sendHeight();
+        });
+
+        // Observe the body element
+        resizeObserver.observe(document.body);
+
+        // Fallback: Also send height after a short delay
+        setTimeout(sendHeight, 100);
+    </script>
+</body>
+
+</html>

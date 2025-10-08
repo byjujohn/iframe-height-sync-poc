@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Application - Iframe Height Sync POC</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .debug-panel h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .metric-value {
+            color: #667eea;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        .vendor-portal-wrapper {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: height 0.3s ease;
+            overflow: hidden;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #1976d2;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            margin-top: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🔄 Iframe Height Synchronization POC</h1>
+        <p class="subtitle">Parent Application - Vanilla JavaScript</p>
+    </div>
+
+    <div class="info-box">
+        <p><strong>📍 How it works:</strong> The iframe content uses postMessage to communicate height changes to the
+            React component, which then notifies this parent application through the onSizeChange callback.</p>
+    </div>
+
+    <div class="debug-panel">
+        <h3>
+            <span class="status-indicator"></span>
+            Debug Information
+        </h3>
+        <div class="metric">
+            <span class="metric-label">Current Height:</span>
+            <span class="metric-value" id="current-height">Waiting...</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Updates Received:</span>
+            <span class="metric-value" id="update-count">0</span>
+        </div>
+        <div class="metric">
+            <span class="metric-label">Last Update:</span>
+            <span class="metric-value" id="last-update">Never</span>
+        </div>
+    </div>
+
+    <div id="vendor-wrapper" class="vendor-portal-wrapper">
+        <vendor-portal id="vendor-portal"></vendor-portal>
+    </div>
+
+    <div class="footer">
+        <h1>Footer</h1>
+        <p class="subtitle">Parent Application - Vanilla JavaScript</p>
+    </div>
+
+    <!-- Load the vendor component bundle -->
+    <script src="./vendor-component/dist/bundle.js"></script>
+
+    <script>
+        // Parent application logic
+        let updateCount = 0;
+        const wrapper = document.getElementById('vendor-wrapper');
+        const currentHeightEl = document.getElementById('current-height');
+        const updateCountEl = document.getElementById('update-count');
+        const lastUpdateEl = document.getElementById('last-update');
+
+        // Wait for web component to be defined
+        customElements.whenDefined('vendor-portal').then(() => {
+            console.log('✅ vendor-portal web component is defined');
+
+            const vendorPortal = document.getElementById('vendor-portal');
+
+            // Set the onSizeChange callback prop
+            vendorPortal.onSizeChange = (height) => {
+                console.log('📏 Parent received height update:', height);
+
+                updateCount++;
+
+                // Update the wrapper div height
+                wrapper.style.height = `${height + 40}px`; // +40 for padding
+
+                // Update debug information
+                currentHeightEl.textContent = `${height}px`;
+                updateCountEl.textContent = updateCount;
+                lastUpdateEl.textContent = new Date().toLocaleTimeString();
+
+                // Visual feedback
+                wrapper.style.transform = 'scale(0.995)';
+                setTimeout(() => {
+                    wrapper.style.transform = 'scale(1)';
+                }, 100);
+            };
+
+            // Set the iframe URL
+            vendorPortal.iframeUrl = './iframe-content/page1.html';
+
+            console.log('✅ Parent application initialized');
+        });
+    </script>
+</body>
+
+</html>
